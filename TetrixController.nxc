@@ -1,0 +1,132 @@
+/*
+ * HiTechnic Motor / Servo controller library for Bricx CC
+ * Additional info available here: https://mattallen37.wordpress.com/2011/05/20/tetrix-and-nxc-drivers/
+ *
+ * @author: Matthew Richardson (@mattallen37)
+ * @author: Dmitriy Nogay (@catwhocode)
+ * @version: 0.1.0
+ *
+ *
+ * @FUTURE: Create userspace-friendly TetrixServo and TetrixMotor functions
+ * 
+ */
+
+/* Daisy chaining addresses */
+#define TETRIX_SINGLE    0x02
+#define TETRIX_ADDRESS_1 0x02
+#define TETRIX_ADDRESS_2 0x04
+#define TETRIX_ADDRESS_3 0x06
+#define TETRIX_ADDRESS_4 0x08
+
+// Motor breaking command
+#define TETRIX_MOTOR_BRAKE 0
+
+// Motor magic byte
+#define TETRIX_MOTOR_FLOAT -128
+
+// Motor forward direction byte
+#define TETRIX_MOTOR_FWD 0x00
+
+// Motor reverse direction byte
+#define TETRIX_MOTOR_REV 0x08
+
+// Restart 10sec kill timer
+#define TETRIX_SERVO_TIME_RESET 0x00
+
+// Disable 10sec kill timer
+#define TETRIX_SERVO_STAY_ON 0xAA
+
+// Switch all servos off
+#define TETRIX_SERVO_OFF 0xFF
+
+// Internal i2cWrite function
+void TetrixI2CWrite(byte port, byte addr, byte reg, byte data[]) {
+
+  // In-scope variables
+  byte cmdbuf[];
+  int loop, n, nByteReady;
+
+  // Build cmdbuf array
+  ArrayBuild(cmdbuf, addr, reg, data);
+
+  // Waiting for bus free
+  loop = STAT_COMM_PENDING;
+  while (loop == STAT_COMM_PENDING ) { loop = I2CStatus(port, nByteReady); }
+
+  // Write byte
+  n = I2CWrite(port, 0, cmdbuf);
+
+  // Waiting for operation complete
+  while (I2CStatus(port, nByteReady) ==  STAT_COMM_PENDING);
+
+}
+
+// I2C initialization
+inline void TetrixSetup(byte port) {
+
+  // Some assembler magic
+  asm {
+
+    setin IN_TYPE_LOWSPEED , port, TypeField
+    setin IN_TYPE_NO_SENSOR , port, InputModeField
+    setin IN_TYPE_SWITCH, port, InvalidDataField
+
+    SensorStillInvalid:
+
+      getin __ResetSensorTmp, port, InvalidDataField
+      brtst NEQ, SensorStillInvalid, __ResetSensorTmp
+
+    };
+
+}
+
+/*
+ * Set Tetrix Motor controller speed
+ * Examples:
+ *
+ *   // Move motors forward
+ *   TetrixMotors(IN_1, TETRIX_SINGLE, 100, 100, TETRIX_MOTOR_FWD, TETRIX_MOTOR_FWD);
+ *
+ *   // Move first motor forward, and second - backward
+ *   TetrixMotors(IN_1, TETRIX_SINGLE, 100, 100, TETRIX_MOTOR_FWD, TETRIX_MOTOR_REV);
+ *
+ *   // Move motors backward
+ *   TetrixMotors(IN_1, TETRIX_SINGLE, 100, 100, TETRIX_MOTOR_BWD, TETRIX_MOTOR_BWD);
+ *
+ */
+
+void TetrixMotors(byte port, byte addr, char motor1, char motor2, byte options1 = 0, byte options2 = 0) {
+
+  // Packet payload
+  char TetrixMotorControlData[4];
+
+  // Set packet values
+  TetrixMotorControlData[0] = options1;
+  TetrixMotorControlData[1] = motor1;
+  TetrixMotorControlData[2] = motor2;
+  TetrixMotorControlData[3] = options2;
+
+  // Send command via I2C
+  TetrixI2CWrite(port, addr, 0x44, TetrixMotorControlData);
+
+}
+
+void TetrixServos(byte port, byte addr, byte servo1, byte servo2 = 0, byte servo3 = 0, byte servo4 = 0, byte servo5 = 0, byte servo6 = 0, byte step_time = 0, byte pwm = TETRIX_SERVO_TIME_RESET) {
+
+  // Packet payload
+  byte TetrixServoControlData[8];
+
+  // Build packet
+  TetrixServoControlData[0] = step_time;
+  TetrixServoControlData[1] = servo1;
+  TetrixServoControlData[2] = servo2;
+  TetrixServoControlData[3] = servo3;
+  TetrixServoControlData[4] = servo4;
+  TetrixServoControlData[5] = servo5;
+  TetrixServoControlData[6] = servo6;
+  TetrixServoControlData[7] = pwm;
+
+  // Send packet
+  TetrixI2CWrite(port, addr, 0x41, TetrixServoControlData);
+
+}
