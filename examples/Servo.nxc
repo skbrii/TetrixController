@@ -1,0 +1,31 @@
+#include "../TetrixController.nxc"
+
+// HiTechnic Servo Controller connection port
+#define SERVO_PORT IN_1
+
+void moduleInitialization() {
+
+  // Tetrix Servo Controller init
+  TetrixSetup(SERVO_PORT);
+
+}
+
+task main() {
+
+  // Init all important things
+  moduleInitialization();
+
+  // Loop
+  while(true) {
+
+    // Rotate all servos to 0deg
+    TetrixServos(SERVO_PORT, TETRIX_ADDRESS_1, 0, 0, 0, 0, 0, 0);
+    Wait(1000);
+
+    // Rotate first servo to 90deg
+    TetrixServos(SERVO_PORT, TETRIX_ADDRESS_1, 90, 0, 0, 0, 0, 0);
+    Wait(1000);
+
+  }
+
+}
