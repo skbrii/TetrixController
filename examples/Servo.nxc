@@ -1,12 +1,19 @@
+/**
+ * Simple example for TetrixController library for Bricx CC
+ * @author: Dmitriy Nogay
+ * @version: 1.0.0
+ * @license: MIT X11
+ */
+
 #include "../TetrixController.nxc"
 
 // HiTechnic Servo Controller connection port
-#define SERVO_PORT IN_1
+#define CONTROLLER_PORT IN_1
 
 void moduleInitialization() {
 
   // Tetrix Servo Controller init
-  TetrixSetup(SERVO_PORT);
+  TetrixSetup(CONTROLLER_PORT);
 
 }
 
@@ -19,11 +26,11 @@ task main() {
   while(true) {
 
     // Rotate all servos to 0deg
-    TetrixServos(SERVO_PORT, TETRIX_ADDRESS_1, 0, 0, 0, 0, 0, 0);
+    TetrixServos(CONTROLLER_PORT, TETRIX_ADDRESS_1, 0, 0, 0, 0, 0, 0);
     Wait(1000);
 
     // Rotate first servo to 90deg
-    TetrixServos(SERVO_PORT, TETRIX_ADDRESS_1, 90, 0, 0, 0, 0, 0);
+    TetrixServos(CONTROLLER_PORT, TETRIX_ADDRESS_1, 90, 0, 0, 0, 0, 0);
     Wait(1000);
 
   }

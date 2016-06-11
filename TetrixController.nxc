@@ -8,11 +8,10 @@
  *
  *
  * @FUTURE: Create userspace-friendly TetrixServo and TetrixMotor functions
- * 
+ *
  */
 
 /* Daisy chaining addresses */
-#define TETRIX_SINGLE    0x02
 #define TETRIX_ADDRESS_1 0x02
 #define TETRIX_ADDRESS_2 0x04
 #define TETRIX_ADDRESS_3 0x06
@@ -85,13 +84,13 @@ inline void TetrixSetup(byte port) {
  * Examples:
  *
  *   // Move motors forward
- *   TetrixMotors(IN_1, TETRIX_SINGLE, 100, 100, TETRIX_MOTOR_FWD, TETRIX_MOTOR_FWD);
+ *   TetrixMotors(IN_1, TETRIX_ADDRESS_1, 100, 100, TETRIX_MOTOR_FWD, TETRIX_MOTOR_FWD);
  *
  *   // Move first motor forward, and second - backward
- *   TetrixMotors(IN_1, TETRIX_SINGLE, 100, 100, TETRIX_MOTOR_FWD, TETRIX_MOTOR_REV);
+ *   TetrixMotors(IN_1, TETRIX_ADDRESS_1, 100, 100, TETRIX_MOTOR_FWD, TETRIX_MOTOR_REV);
  *
  *   // Move motors backward
- *   TetrixMotors(IN_1, TETRIX_SINGLE, 100, 100, TETRIX_MOTOR_BWD, TETRIX_MOTOR_BWD);
+ *   TetrixMotors(IN_1, TETRIX_ADDRESS_1, 100, 100, TETRIX_MOTOR_BWD, TETRIX_MOTOR_BWD);
  *
  */
 

@@ -1,0 +1,38 @@
+/**
+ * Simple example for TetrixController library for Bricx CC
+ * @author: Dmitriy Nogay
+ * @version: 1.0.0
+ * @license: MIT X11
+ */
+
+#include "../TetrixController.nxc"
+
+// HiTechnic Motor Controller connection port
+#define CONTROLLER_PORT IN_1
+
+void moduleInitialization() {
+
+  // Tetrix Motor Controller init
+  TetrixSetup(CONTROLLER_PORT);
+
+}
+
+task main() {
+
+  // Init all important things
+  moduleInitialization();
+
+  // Loop
+  while(true) {
+
+    // Rotate first motor forward at full speed, and second motor backward at half speed
+    TetrixMotors(CONTROLLER_PORT, TETRIX_ADDRESS_1, 100, 50, TETRIX_MOTOR_FWD, TETRIX_MOTOR_REV);
+    Wait(5000);
+
+    // Invert rotation direction and speeds
+    TetrixMotors(CONTROLLER_PORT, TETRIX_ADDRESS_1, 50, 100, TETRIX_MOTOR_REV, TETRIX_MOTOR_FWD);
+    Wait(5000);
+
+  }
+
+}

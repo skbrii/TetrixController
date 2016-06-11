@@ -1,0 +1,63 @@
+/**
+ * Simple example for chaining connection of Tetrix Controllers
+ * @author: Dmitriy Nogay
+ * @version: 1.0.0
+ * @license: MIT X11
+ *
+ *
+ * In this example, we have two controllers that connected to NXT block by
+ * only one port. This is feature named "daisy-chaining".
+ *
+ * To use daisy-chaining, connect one controller to NXT block, and connect
+ * another one controller to second port of first controller. You can connect
+ * up to four controllers on a single NXT port like this.
+ *
+ * In this example, we have connection like this:
+ *
+ *   [     ]        NXT: IN_1        [ TETRIX ]   Motor: RIGHT_PORT  [ TETRIX ]
+ *   [ NXT ] <-------------------->  [ MOTOR  ] <------------------> [ SERVO  ]
+ *   [     ]    Motor: LEFT_PORT     [ CNTRLR ]   Servo: LEFT_PORT   [ CNTRLR ]
+ *
+ *																TETRIX_ADDRESS_1                 TETRIX_ADDRESS_2
+ *
+ */
+
+#include "../TetrixController.nxc"
+
+// Connection port
+#define CONTROLLER_PORT IN_1
+
+void moduleInitialization() {
+
+  // Initialize bus
+  TetrixSetup(CONTROLLER_PORT);
+
+}
+
+task main() {
+
+  // Init all important things
+  moduleInitialization();
+
+  // Loop
+  while(true) {
+
+    // Rotate all motors on first controller forward at full speed
+    TetrixMotors(CONTROLLER_PORT, TETRIX_ADDRESS_1, 100, 100, TETRIX_MOTOR_FWD, TETRIX_MOTOR_FWD);
+
+    // And rotate all servos on second controller to 0 degrees
+    TetrixServos(CONTROLLER_PORT, TETRIX_ADDRESS_2, 0, 0, 0, 0, 0, 0);
+
+    Wait(5000);
+
+    // Rotate all motors on first controller backward at half speed
+    TetrixMotors(CONTROLLER_PORT, TETRIX_ADDRESS_1, 50, 50, TETRIX_MOTOR_FWD, TETRIX_MOTOR_FWD);
+
+    // And rotate all servos on second controller to 90 degrees
+    TetrixServos(CONTROLLER_PORT, TETRIX_ADDRESS_2, 90, 90, 90, 90, 90, 90);
+
+    Wait(5000);
+
+  }
+
+}
